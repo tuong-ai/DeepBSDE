@@ -12,6 +12,14 @@ from config import get_config
 from equation import get_equation
 from solver import FeedForwardModel
 
+def del_all_flags(FLAGS):
+    flags_dict = FLAGS._flags()    
+    keys_list = [keys for keys in flags_dict]    
+    for keys in keys_list:
+        FLAGS.__delattr__(keys)
+
+del_all_flags(tf.flags.FLAGS)
+
 FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('problem_name', 'HJB',
                            """The name of partial differential equation.""")

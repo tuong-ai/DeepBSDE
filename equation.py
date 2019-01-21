@@ -66,7 +66,7 @@ class AllenCahn(Equation):
                                      self._num_time_interval]) * self._sqrt_delta_t
         x_sample = np.zeros([num_sample, self._dim, self._num_time_interval + 1])
         x_sample[:, :, 0] = np.ones([num_sample, self._dim]) * self._x_init
-        for i in xrange(self._num_time_interval):
+        for i in range(self._num_time_interval):
             x_sample[:, :, i + 1] = x_sample[:, :, i] + self._sigma * dw_sample[:, :, i]
         return dw_sample, x_sample
 
@@ -74,7 +74,7 @@ class AllenCahn(Equation):
         return y - tf.pow(y, 3)
 
     def g_tf(self, t, x):
-        return 0.5 / (1 + 0.2 * tf.reduce_sum(tf.square(x), 1, keep_dims=True))
+        return 0.5 / (1 + 0.2 * tf.reduce_sum(tf.square(x), 1, keepdims=True))
 
 
 class HJB(Equation):
@@ -90,15 +90,15 @@ class HJB(Equation):
                                      self._num_time_interval]) * self._sqrt_delta_t
         x_sample = np.zeros([num_sample, self._dim, self._num_time_interval + 1])
         x_sample[:, :, 0] = np.ones([num_sample, self._dim]) * self._x_init
-        for i in xrange(self._num_time_interval):
+        for i in range(self._num_time_interval):
             x_sample[:, :, i + 1] = x_sample[:, :, i] + self._sigma * dw_sample[:, :, i]
         return dw_sample, x_sample
 
     def f_tf(self, t, x, y, z):
-        return -self._lambda * tf.reduce_sum(tf.square(z), 1, keep_dims=True)
+        return -self._lambda * tf.reduce_sum(tf.square(z), 1, keepdims=True)
 
     def g_tf(self, t, x):
-        return tf.log((1 + tf.reduce_sum(tf.square(x), 1, keep_dims=True)) / 2)
+        return tf.log((1 + tf.reduce_sum(tf.square(x), 1, keepdims=True)) / 2)
 
 
 class PricingOption(Equation):
@@ -117,21 +117,21 @@ class PricingOption(Equation):
                                      self._num_time_interval]) * self._sqrt_delta_t
         x_sample = np.zeros([num_sample, self._dim, self._num_time_interval + 1])
         x_sample[:, :, 0] = np.ones([num_sample, self._dim]) * self._x_init
-        # for i in xrange(self._n_time):
+        # for i in range(self._n_time):
         # 	x_sample[:, :, i + 1] = (1 + self._mu_bar * self._delta_t) * x_sample[:, :, i] + (
         # 		self._sigma * x_sample[:, :, i] * dw_sample[:, :, i])
         factor = np.exp((self._mu_bar-(self._sigma**2)/2)*self._delta_t)
-        for i in xrange(self._num_time_interval):
+        for i in range(self._num_time_interval):
             x_sample[:, :, i + 1] = (factor * np.exp(self._sigma * dw_sample[:, :, i])) * x_sample[:, :, i]
         return dw_sample, x_sample
 
     def f_tf(self, t, x, y, z):
-        temp = tf.reduce_sum(z, 1, keep_dims=True) / self._sigma
+        temp = tf.reduce_sum(z, 1, keepdims=True) / self._sigma
         return -self._rl * y - (self._mu_bar - self._rl) * temp + (
             (self._rb - self._rl) * tf.maximum(temp - y, 0))
 
     def g_tf(self, t, x):
-        temp = tf.reduce_max(x, 1, keep_dims=True)
+        temp = tf.reduce_max(x, 1, keepdims=True)
         return tf.maximum(temp - 120, 0) - 2 * tf.maximum(temp - 150, 0)
 
 
@@ -155,7 +155,7 @@ class PricingDefaultRisk(Equation):
                                      self._num_time_interval]) * self._sqrt_delta_t
         x_sample = np.zeros([num_sample, self._dim, self._num_time_interval + 1])
         x_sample[:, :, 0] = np.ones([num_sample, self._dim]) * self._x_init
-        for i in xrange(self._num_time_interval):
+        for i in range(self._num_time_interval):
             x_sample[:, :, i + 1] = (1 + self._mu_bar * self._delta_t) * x_sample[:, :, i] + (
                 self._sigma * x_sample[:, :, i] * dw_sample[:, :, i])
         return dw_sample, x_sample
@@ -166,7 +166,7 @@ class PricingDefaultRisk(Equation):
         return (-(1 - self._delta) * piecewise_linear - self._rate) * y
 
     def g_tf(self, t, x):
-        return tf.reduce_min(x, 1, keep_dims=True)
+        return tf.reduce_min(x, 1, keepdims=True)
 
 
 class BurgesType(Equation):
@@ -182,15 +182,15 @@ class BurgesType(Equation):
                                      self._num_time_interval]) * self._sqrt_delta_t
         x_sample = np.zeros([num_sample, self._dim, self._num_time_interval + 1])
         x_sample[:, :, 0] = np.ones([num_sample, self._dim]) * self._x_init
-        for i in xrange(self._num_time_interval):
+        for i in range(self._num_time_interval):
             x_sample[:, :, i + 1] = x_sample[:, :, i] + self._sigma * dw_sample[:, :, i]
         return dw_sample, x_sample
 
     def f_tf(self, t, x, y, z):
-        return (y - (2 + self._dim) / 2.0 / self._dim) * tf.reduce_sum(z, 1, keep_dims=True)
+        return (y - (2 + self._dim) / 2.0 / self._dim) * tf.reduce_sum(z, 1, keepdims=True)
 
     def g_tf(self, t, x):
-        return 1 - 1.0 / (1 + tf.exp(t + tf.reduce_sum(x, 1, keep_dims=True) / self._dim))
+        return 1 - 1.0 / (1 + tf.exp(t + tf.reduce_sum(x, 1, keepdims=True) / self._dim))
 
 
 class QuadraticGradients(Equation):
@@ -207,16 +207,16 @@ class QuadraticGradients(Equation):
                                      self._num_time_interval]) * self._sqrt_delta_t
         x_sample = np.zeros([num_sample, self._dim, self._num_time_interval + 1])
         x_sample[:, :, 0] = np.ones([num_sample, self._dim]) * self._x_init
-        for i in xrange(self._num_time_interval):
+        for i in range(self._num_time_interval):
             x_sample[:, :, i + 1] = x_sample[:, :, i] + dw_sample[:, :, i]
         return dw_sample, x_sample
 
     def f_tf(self, t, x, y, z):
-        x_square = tf.reduce_sum(tf.square(x), 1, keep_dims=True)
+        x_square = tf.reduce_sum(tf.square(x), 1, keepdims=True)
         base = self._total_time - t + x_square / self._dim
         base_alpha = tf.pow(base, self._alpha)
         derivative = self._alpha * tf.pow(base, self._alpha - 1) * tf.cos(base_alpha)
-        term1 = tf.reduce_sum(tf.square(z), 1, keep_dims=True)
+        term1 = tf.reduce_sum(tf.square(z), 1, keepdims=True)
         term2 = -4.0 * (derivative ** 2) * x_square / (self._dim ** 2)
         term3 = derivative
         term4 = -0.5 * (
@@ -230,7 +230,7 @@ class QuadraticGradients(Equation):
 
     def g_tf(self, t, x):
         return tf.sin(
-            tf.pow(tf.reduce_sum(tf.square(x), 1, keep_dims=True) / self._dim, self._alpha))
+            tf.pow(tf.reduce_sum(tf.square(x), 1, keepdims=True) / self._dim, self._alpha))
 
 
 class ReactionDiffusion(Equation):
@@ -248,16 +248,16 @@ class ReactionDiffusion(Equation):
                                      self._num_time_interval]) * self._sqrt_delta_t
         x_sample = np.zeros([num_sample, self._dim, self._num_time_interval + 1])
         x_sample[:, :, 0] = np.ones([num_sample, self._dim]) * self._x_init
-        for i in xrange(self._num_time_interval):
+        for i in range(self._num_time_interval):
             x_sample[:, :, i + 1] = x_sample[:, :, i] + dw_sample[:, :, i]
         return dw_sample, x_sample
 
     def f_tf(self, t, x, y, z):
         exp_term = tf.exp((self._lambda ** 2) * self._dim * (t - self._total_time) / 2)
-        sin_term = tf.sin(self._lambda * tf.reduce_sum(x, 1, keep_dims=True))
+        sin_term = tf.sin(self._lambda * tf.reduce_sum(x, 1, keepdims=True))
         temp = y - self._kappa - 1 - sin_term * exp_term
         return tf.minimum(tf.constant(1.0, dtype=tf.float64), tf.square(temp))
 
     def g_tf(self, t, x):
-        return 1 + self._kappa + tf.sin(self._lambda * tf.reduce_sum(x, 1, keep_dims=True))
+        return 1 + self._kappa + tf.sin(self._lambda * tf.reduce_sum(x, 1, keepdims=True))
 

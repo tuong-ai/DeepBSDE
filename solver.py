@@ -34,7 +34,7 @@ class FeedForwardModel(object):
         # initialization
         self._sess.run(tf.global_variables_initializer())
         # begin sgd iteration
-        for step in xrange(self._config.num_iterations+1):
+        for step in range(self._config.num_iterations+1):
             if step % self._config.logging_frequency == 0:
                 loss, init = self._sess.run([self._loss, self._y_init], feed_dict=feed_dict_valid)
                 elapsed_time = time.time()-start_time+self._t_build
@@ -65,15 +65,15 @@ class FeedForwardModel(object):
         y = all_one_vec * self._y_init
         z = tf.matmul(all_one_vec, z_init)
         with tf.variable_scope('forward'):
-            for t in xrange(0, self._num_time_interval-1):
+            for t in range(0, self._num_time_interval-1):
                 y = y - self._bsde.delta_t * (
                     self._bsde.f_tf(time_stamp[t], self._x[:, :, t], y, z)
-                ) + tf.reduce_sum(z * self._dw[:, :, t], 1, keep_dims=True)
+                ) + tf.reduce_sum(z * self._dw[:, :, t], 1, keepdims=True)
                 z = self._subnetwork(self._x[:, :, t + 1], str(t + 1)) / self._dim
             # terminal time
             y = y - self._bsde.delta_t * self._bsde.f_tf(
                 time_stamp[-1], self._x[:, :, -2], y, z
-            ) + tf.reduce_sum(z * self._dw[:, :, -1], 1, keep_dims=True)
+            ) + tf.reduce_sum(z * self._dw[:, :, -1], 1, keepdims=True)
             delta = y - self._bsde.g_tf(self._total_time, self._x[:, :, -1])
             # use linear approximation outside the clipped range
             self._loss = tf.reduce_mean(tf.where(tf.abs(delta) < DELTA_CLIP, tf.square(delta),
@@ -99,7 +99,7 @@ class FeedForwardModel(object):
             # standardize the path input first
             # the affine  could be redundant, but helps converge faster
             hiddens = self._batch_norm(x, name='path_input_norm')
-            for i in xrange(1, len(self._config.num_hiddens)-1):
+            for i in range(1, len(self._config.num_hiddens)-1):
                 hiddens = self._dense_batch_layer(hiddens,
                                                   self._config.num_hiddens[i],
                                                   activation_fn=tf.nn.relu,
